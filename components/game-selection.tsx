@@ -20,12 +20,32 @@ export function GameSelection() {
   const [games, setGames] = useState<GameType[]>([])
   const [isLoading, setIsLoading] = useState(true)
   
+  // Load settings from localStorage on component mount
   useEffect(() => {
     // This code runs only on the client side
     setIsClient(true)
+    
+    // Load settings from localStorage
+    const savedSettings = localStorage.getItem('quizTimerSettings')
+    if (savedSettings) {
+      const { enabled, seconds } = JSON.parse(savedSettings)
+      setTimerEnabled(enabled)
+      setTimerSeconds(seconds)
+    }
+    
     setGames(getAvailableGames())
     setIsLoading(false)
   }, [])
+  
+  // Save settings to localStorage whenever they change
+  useEffect(() => {
+    if (!isClient) return;
+    
+    localStorage.setItem('quizTimerSettings', JSON.stringify({
+      enabled: timerEnabled,
+      seconds: timerSeconds
+    }))
+  }, [isClient, timerEnabled, timerSeconds])
 
   const getGameIcon = (gameId: string) => {
     switch (gameId) {
