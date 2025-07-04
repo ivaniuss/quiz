@@ -35,3 +35,21 @@ export interface GameType {
   icon: string
   available: boolean
 }
+
+export interface GameSettings {
+  timerEnabled: boolean
+  timerSeconds: number
+}
+
+export interface GameData {
+  currentGame: GameType | null
+  currentQuiz: Quiz | null
+  completionData: CompletionData | null
+}
+
+export interface GameState {
+  status: 'idle' | 'loading' | 'success' | 'error'
+  error: string | null
+  data: GameData
+  settings: GameSettings
+}

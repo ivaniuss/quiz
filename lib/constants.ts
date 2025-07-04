@@ -1,4 +1,4 @@
-export enum GameState {
+export enum GamePhase {
   LOADING = "loading",
   SELECTION = "selection",
   LOCKED = "locked",
