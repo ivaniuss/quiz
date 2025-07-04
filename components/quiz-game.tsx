@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -21,10 +21,44 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
   const [showResult, setShowResult] = useState(false)
   const [score, setScore] = useState(0)
   const [answers, setAnswers] = useState<Array<{ questionId: string; selected: string; correct: string }>>([])
-
   const [timeLeft, setTimeLeft] = useState<number>(timerSeconds || 30)
   const [timerActive, setTimerActive] = useState(false)
 
+  const currentQuestion = quiz.questions[currentQuestionIndex]
+  const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100
+  const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1
+
+  // Función para manejar el timeout del temporizador
+  const handleTimerTimeout = useCallback(() => {
+    if (timerEnabled) {
+      setTimerActive(false)
+      // Si no se ha seleccionado respuesta, marcar como incorrecta
+      if (!selectedAnswer && currentQuestion) {
+        const newAnswers = [
+          ...answers,
+          {
+            questionId: currentQuestion.id,
+            selected: "",
+            correct: currentQuestion.correctAnswer,
+          },
+        ]
+        setAnswers(newAnswers)
+        setShowResult(true)
+
+        setTimeout(() => {
+          if (isLastQuestion) {
+            onComplete(score, quiz.questions.length)
+          } else {
+            setCurrentQuestionIndex(currentQuestionIndex + 1)
+            setSelectedAnswer(null)
+            setShowResult(false)
+          }
+        }, 1500)
+      }
+    }
+  }, [timerEnabled, selectedAnswer, answers, currentQuestion, isLastQuestion, onComplete, score, quiz.questions.length, currentQuestionIndex])
+
+  // Efecto para el temporizador
   useEffect(() => {
     if (timerEnabled && timerActive && timeLeft > 0 && !showResult) {
       const timer = setTimeout(() => {
@@ -32,21 +66,18 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
       }, 1000)
       return () => clearTimeout(timer)
     } else if (timerEnabled && timeLeft === 0 && !showResult) {
-      // Time's up - auto-select no answer or first option
-      handleNextQuestion()
+      // Time's up - manejar timeout
+      handleTimerTimeout()
     }
-  }, [timerEnabled, timerActive, timeLeft, showResult])
-
+  }, [timerEnabled, timerActive, timeLeft, showResult, handleTimerTimeout])
+  
+  // Reiniciar el temporizador cuando cambia la pregunta
   useEffect(() => {
     if (timerEnabled) {
       setTimeLeft(timerSeconds || 30)
       setTimerActive(true)
     }
   }, [currentQuestionIndex, timerEnabled, timerSeconds])
-
-  const currentQuestion = quiz.questions[currentQuestionIndex]
-  const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100
-  const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1
 
   const getButtonVariant = (option: string) => {
     if (!showResult) return 'outline'
@@ -58,20 +89,14 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
   const handleAnswerSelect = (answer: string) => {
     if (showResult) return
     setSelectedAnswer(answer)
-  }
-
-  const handleNextQuestion = () => {
-    setTimerActive(false)
-
-    // If no answer selected and timer ran out, mark as incorrect
-    const finalAnswer = selectedAnswer || ""
-
-    const isCorrect = finalAnswer === currentQuestion.correctAnswer
+    
+    // Evaluar automáticamente la respuesta
+    const isCorrect = answer === currentQuestion.correctAnswer
     const newAnswers = [
       ...answers,
       {
         questionId: currentQuestion.id,
-        selected: finalAnswer,
+        selected: answer,
         correct: currentQuestion.correctAnswer,
       },
     ]
@@ -84,6 +109,7 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
 
     setShowResult(true)
 
+    // Pasar a la siguiente pregunta después de un breve retraso
     setTimeout(() => {
       if (isLastQuestion) {
         onComplete(isCorrect ? score + 1 : score, quiz.questions.length)
@@ -94,6 +120,8 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
       }
     }, 1500)
   }
+
+
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4" data-testid="quiz-game-container">
@@ -124,8 +152,7 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
         <CardContent className="p-6">
           <h2 className="text-xl font-semibold mb-6 text-gray-800 leading-relaxed">{currentQuestion.question}</h2>
 
-          <div className="space-y-4">
-
+          <div className="space-y-4" data-testid="options-container">
             {currentQuestion.options.map((option, index) => {
               let buttonClass = "w-full p-4 text-left border-2 transition-all duration-200 hover:border-green-300"
 
@@ -151,6 +178,8 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
                   onClick={() => handleAnswerSelect(option)}
                   disabled={showResult}
                   data-testid={`option-${currentQuestion.id}-${index}`}
+                  data-option-index={index}
+                  data-question-id={currentQuestion.id}
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{option}</span>
@@ -168,16 +197,7 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
             })}
           </div>
 
-          {!showResult && (
-            <Button
-              onClick={handleNextQuestion}
-              className="mt-6 w-full"
-              disabled={!selectedAnswer && !showResult}
-              data-testid="next-button"
-            >
-              {isLastQuestion ? "Finish Quiz" : "Next Question"}
-            </Button>
-          )}
+          {/* Botón de siguiente eliminado para evaluación automática */}
 
           {showResult && (
             <div className="mt-6 p-4 rounded-lg bg-gray-50 border">
