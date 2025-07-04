@@ -1,5 +1,5 @@
-import { FutQuizApp } from "@/components/futquiz-app"
+import { redirect } from 'next/navigation';
 
 export default function Home() {
-  return <FutQuizApp />
+  redirect('/games');
 }

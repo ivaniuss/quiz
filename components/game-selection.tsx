@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,14 +12,20 @@ import { Clock, Trophy, Users, Target, CheckCircle, Lock } from "lucide-react"
 import { getAvailableGames, hasCompletedGameToday } from "@/lib/quiz-data"
 import type { GameType } from "@/lib/types"
 
-interface GameSelectionProps {
-  onGameSelect: (game: GameType, timerEnabled: boolean, timerSeconds: number) => void
-}
-
-export function GameSelection({ onGameSelect }: GameSelectionProps) {
+export function GameSelection() {
+  const router = useRouter()
+  const [isClient, setIsClient] = useState(false)
   const [timerEnabled, setTimerEnabled] = useState(false)
   const [timerSeconds, setTimerSeconds] = useState(30)
-  const games = getAvailableGames()
+  const [games, setGames] = useState<GameType[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  
+  useEffect(() => {
+    // This code runs only on the client side
+    setIsClient(true)
+    setGames(getAvailableGames())
+    setIsLoading(false)
+  }, [])
 
   const getGameIcon = (gameId: string) => {
     switch (gameId) {
@@ -142,7 +149,16 @@ export function GameSelection({ onGameSelect }: GameSelectionProps) {
                 <p className="text-gray-600 mb-4 text-sm leading-relaxed">{game.description}</p>
 
                 <Button
-                  onClick={() => onGameSelect(game, timerEnabled, timerSeconds)}
+                  onClick={() => {
+                    if (isCompleted || !isAvailable) return;
+                    // Navigate to the game page with timer settings as query params
+                    const queryParams = new URLSearchParams();
+                    if (timerEnabled) {
+                      queryParams.append('timer', 'true');
+                      queryParams.append('seconds', timerSeconds.toString());
+                    }
+                    router.push(`/games/${game.id}?${queryParams.toString()}`);
+                  }}
                   disabled={isCompleted || !isAvailable}
                   className={`w-full ${
                     isCompleted
@@ -152,7 +168,7 @@ export function GameSelection({ onGameSelect }: GameSelectionProps) {
                         : "bg-gray-200 text-gray-500"
                   }`}
                 >
-                  {isCompleted ? "Completed Today" : isAvailable ? "Play Now" : "Coming Soon"}
+                  {isCompleted ? "Completed" : isAvailable ? "Play Now" : "Coming Soon"}
                 </Button>
 
                 {isCompleted && (

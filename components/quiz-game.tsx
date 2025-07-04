@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { CheckCircle, XCircle, Clock } from "lucide-react"
-import type { Quiz } from "@/lib/types"
-
-type GameType = "quiz" | "practice"
+import type { Quiz, GameType } from "../lib/types"
 
 interface QuizGameProps {
   quiz: Quiz

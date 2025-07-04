@@ -1,7 +1,7 @@
 import type { Quiz, CompletionData, GameType } from "./types"
 
 // Available game types
-const AVAILABLE_GAMES: GameType[] = [
+export const GAMES: GameType[] = [
   {
     id: "daily-trivia",
     name: "Daily Trivia",
@@ -163,7 +163,11 @@ function getTodayQuizId(): string {
 }
 
 export function getAvailableGames(): GameType[] {
-  return AVAILABLE_GAMES
+  return GAMES
+}
+
+export function getGameById(gameId: string): GameType | undefined {
+  return GAMES.find(game => game.id === gameId)
 }
 
 export function getGameQuiz(gameId: string): Quiz {
@@ -194,8 +198,19 @@ export function getGameQuiz(gameId: string): Quiz {
   }
 }
 
+// Helper function to safely access localStorage
+const getLocalStorage = () => {
+  if (typeof window === 'undefined') {
+    return null
+  }
+  return window.localStorage
+}
+
 export function hasCompletedGameToday(gameId: string): boolean {
-  const completion = localStorage.getItem(`futquiz_completion_${gameId}`)
+  const storage = getLocalStorage()
+  if (!storage) return false
+  
+  const completion = storage.getItem(`futquiz_completion_${gameId}`)
   if (!completion) return false
 
   try {
@@ -207,11 +222,17 @@ export function hasCompletedGameToday(gameId: string): boolean {
 }
 
 export function markGameCompleted(gameId: string, completionData: CompletionData): void {
-  localStorage.setItem(`futquiz_completion_${gameId}`, JSON.stringify(completionData))
+  const storage = getLocalStorage()
+  if (!storage) return
+  
+  storage.setItem(`futquiz_completion_${gameId}`, JSON.stringify(completionData))
 }
 
 export function getTodayGameCompletionData(gameId: string): CompletionData | null {
-  const completion = localStorage.getItem(`futquiz_completion_${gameId}`)
+  const storage = getLocalStorage()
+  if (!storage) return null
+  
+  const completion = storage.getItem(`futquiz_completion_${gameId}`)
   if (!completion) return null
 
   try {
@@ -227,10 +248,6 @@ export function getTodayGameCompletionData(gameId: string): CompletionData | nul
 
 // Future: This could be replaced with API calls
 export async function fetchTodaysQuiz(): Promise<Quiz> {
-  // Simulate API call
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(getGameQuiz("daily-trivia"))
-    }, 500)
-  })
+  // For now, just return a static quiz
+  return getGameQuiz("daily-trivia")
 }
