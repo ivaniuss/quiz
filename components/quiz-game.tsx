@@ -149,7 +149,7 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
           )}
         </CardHeader>
 
-        <CardContent className="p-6">
+        <CardContent className="p-6" data-testid="quiz-game-container">
           <h2 className="text-xl font-semibold mb-6 text-gray-800 leading-relaxed">{currentQuestion.question}</h2>
 
           <div className="space-y-4" data-testid="options-container">
