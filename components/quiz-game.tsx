@@ -48,6 +48,13 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
   const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100
   const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1
 
+  const getButtonVariant = (option: string) => {
+    if (!showResult) return 'outline'
+    if (option === currentQuestion.correctAnswer) return 'default'
+    if (option === selectedAnswer && option !== currentQuestion.correctAnswer) return 'destructive'
+    return 'outline'
+  }
+
   const handleAnswerSelect = (answer: string) => {
     if (showResult) return
     setSelectedAnswer(answer)
@@ -89,13 +96,11 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto p-4" data-testid="quiz-game-container">
       <Card className="shadow-lg border-2 border-green-100">
         <CardHeader className="bg-green-50">
           <div className="flex justify-between items-center mb-2">
-            <CardTitle className="text-lg text-green-700">
-              Question {currentQuestionIndex + 1} of {quiz.questions.length}
-            </CardTitle>
+            <CardTitle className="text-lg" data-testid="question-counter">Question {currentQuestionIndex + 1} of {quiz.questions.length}</CardTitle>
             <div className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full">
               Score: {score}/
               {currentQuestionIndex + (showResult && selectedAnswer === currentQuestion.correctAnswer ? 1 : 0)}
@@ -119,7 +124,8 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
         <CardContent className="p-6">
           <h2 className="text-xl font-semibold mb-6 text-gray-800 leading-relaxed">{currentQuestion.question}</h2>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
+
             {currentQuestion.options.map((option, index) => {
               let buttonClass = "w-full p-4 text-left border-2 transition-all duration-200 hover:border-green-300"
 
@@ -138,11 +144,13 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
               }
 
               return (
-                <button
-                  key={index}
+                <Button
+                  key={option}
+                  variant={getButtonVariant(option)}
+                  className="w-full justify-start text-left h-auto py-3 px-4"
                   onClick={() => handleAnswerSelect(option)}
                   disabled={showResult}
-                  className={buttonClass}
+                  data-testid={`option-${currentQuestion.id}-${index}`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{option}</span>
@@ -155,7 +163,7 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
                       </>
                     )}
                   </div>
-                </button>
+                </Button>
               )
             })}
           </div>
@@ -163,8 +171,9 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
           {!showResult && (
             <Button
               onClick={handleNextQuestion}
-              disabled={!selectedAnswer}
-              className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 text-lg font-semibold"
+              className="mt-6 w-full"
+              disabled={!selectedAnswer && !showResult}
+              data-testid="next-button"
             >
               {isLastQuestion ? "Finish Quiz" : "Next Question"}
             </Button>
