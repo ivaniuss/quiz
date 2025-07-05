@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { CheckCircle, XCircle, Clock } from "lucide-react"
 import type { Quiz, GameType } from "../lib/types"
+import { submitQuizAnswers } from "@/lib/api"
 
 interface QuizGameProps {
   quiz: Quiz
@@ -86,42 +87,55 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
     return 'outline'
   }
 
-  const handleAnswerSelect = (answer: string) => {
-    if (showResult) return
-    setSelectedAnswer(answer)
+  const handleAnswerSelect = async (answer: string) => {
+    if (showResult) return // Evitar múltiples selecciones
     
-    // Evaluar automáticamente la respuesta
+    setSelectedAnswer(answer)
     const isCorrect = answer === currentQuestion.correctAnswer
-    const newAnswers = [
-      ...answers,
-      {
-        questionId: currentQuestion.id,
-        selected: answer,
-        correct: currentQuestion.correctAnswer,
-      },
-    ]
-
-    setAnswers(newAnswers)
-
-    if (isCorrect) {
-      setScore(score + 1)
-    }
-
-    setShowResult(true)
-
-    // Pasar a la siguiente pregunta después de un breve retraso
-    setTimeout(() => {
-      if (isLastQuestion) {
-        onComplete(isCorrect ? score + 1 : score, quiz.questions.length)
-      } else {
-        setCurrentQuestionIndex(currentQuestionIndex + 1)
-        setSelectedAnswer(null)
-        setShowResult(false)
+    
+    try {
+      // Enviar la respuesta al servidor
+      const result = await submitQuizAnswers(currentQuestion.id, answer)
+      
+      const newAnswers = [
+        ...answers,
+        {
+          questionId: currentQuestion.id,
+          selected: answer,
+          correct: currentQuestion.correctAnswer,
+        },
+      ]
+      
+      setAnswers(newAnswers)
+      setShowResult(true)
+      
+      if (isCorrect) {
+        setScore(score + 1)
       }
-    }, 1500)
+      
+      // Desactivar el temporizador cuando se selecciona una respuesta
+      setTimerActive(false)
+      
+      // Mover a la siguiente pregunta después de un breve retraso
+      setTimeout(() => {
+        if (isLastQuestion) {
+          onComplete(score + (isCorrect ? 1 : 0), quiz.questions.length)
+        } else {
+          setCurrentQuestionIndex(currentQuestionIndex + 1)
+          setSelectedAnswer(null)
+          setShowResult(false)
+          if (timerEnabled) {
+            setTimeLeft(timerSeconds)
+            setTimerActive(true)
+          }
+        }
+      }, 1500)
+    } catch (error) {
+      console.error('Error submitting answer:', error)
+      // Mostrar un mensaje de error al usuario
+      alert('Error al enviar la respuesta. Por favor, inténtalo de nuevo.')
+    }
   }
-
-
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4" data-testid="quiz-game-container">

@@ -34,6 +34,12 @@ export interface GameType {
   route: string
   icon: string
   available: boolean
+  colors: {
+    primary: string
+    secondary: string
+    gradient: string
+  }
+  iconComponent: React.ComponentType<{ className?: string }>
 }
 
 export interface GameSettings {

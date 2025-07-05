@@ -1,6 +1,7 @@
 // lib/db.ts
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
+import * as schema from './schema';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -14,4 +15,4 @@ pool.connect()
     console.error('❌ Error al conectar a la base de datos:', err);
   });
 
-export const db = drizzle(pool);
+export const db = drizzle(pool, { schema });

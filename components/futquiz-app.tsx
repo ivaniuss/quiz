@@ -6,8 +6,9 @@ import { GameSelection } from "./game-selection"
 import { QuizGame } from "./quiz-game"
 import { DailyLock } from "./daily-lock"
 import { ScoreSummary } from "./score-summary"
-import { getGameQuiz, hasCompletedGameToday, markGameCompleted, getTodayGameCompletionData, getGameById, GAMES } from "@/lib/quiz-data"
+import { hasCompletedGameToday, markGameCompleted, getTodayGameCompletionData, getGameById } from "@/lib/game-utils"
 import type { Quiz, CompletionData, GameType } from "@/lib/types"
+import { fetchQuiz, submitQuizAnswers } from "@/lib/api"
 
 export function FutQuizApp() {
   const router = useRouter()
@@ -62,9 +63,21 @@ export function FutQuizApp() {
         setCompletionData(completion)
         setGameState("completed")
       } else {
-        const quiz = getGameQuiz(game.id)
-        setCurrentQuiz(quiz)
-        setGameState("playing")
+        // Load quiz data when a game is selected
+        const loadQuiz = async () => {
+          try {
+            setGameState("loading")
+            const quiz = await fetchQuiz()
+            setCurrentQuiz(quiz)
+            setGameState("playing")
+          } catch (error) {
+            console.error("Failed to load quiz:", error)
+            // Handle error state
+            setGameState("selection")
+          }
+        }
+
+        loadQuiz()
       }
     }
 
@@ -84,33 +97,52 @@ export function FutQuizApp() {
       setCompletionData(completion)
       setGameState("completed")
     } else {
-      const quiz = getGameQuiz(game.id)
-      setCurrentQuiz(quiz)
-      setGameState("playing")
+      const loadQuiz = async () => {
+        try {
+          setGameState("loading")
+          const quiz = await fetchQuiz()
+          setCurrentQuiz(quiz)
+          setGameState("playing")
+        } catch (error) {
+          console.error("Failed to load quiz:", error)
+          setGameState("selection")
+        }
+      }
+
+      loadQuiz()
     }
   }
 
-  const handleQuizComplete = (score: number, totalQuestions: number) => {
-    if (!selectedGame) return
+  const handleQuizComplete = async (score: number, totalQuestions: number) => {
+    if (!selectedGame || !currentQuiz) return;
 
-    const completion: CompletionData = {
-      gameId: selectedGame.id,
-      gameName: selectedGame.name,
-      score,
-      totalQuestions,
-      completedAt: new Date().toISOString(),
-      date: new Date().toDateString(),
-      timerUsed: timerEnabled,
-      timerSeconds: timerEnabled ? timerSeconds : undefined,
+    try {
+      const completion: CompletionData = {
+        gameId: selectedGame.id,
+        gameName: selectedGame.name,
+        score,
+        totalQuestions,
+        completedAt: new Date().toISOString(),
+        date: new Date().toDateString(),
+        timerUsed: timerEnabled,
+        timerSeconds: timerEnabled ? timerSeconds : undefined,
+      };
+
+      // Note: We're not submitting answers to the API here anymore
+      // because the QuizGame component should handle submitting each answer
+      // as the user progresses through the quiz
+      
+      markGameCompleted(selectedGame.id, completion);
+      setCompletionData(completion);
+      setGameState("completed");
+      
+      // Update the URL to show the completed state
+      router.push(`/games/${selectedGame.id}/completed`);
+    } catch (error) {
+      console.error("Failed to complete quiz:", error);
+      // Handle error appropriately
     }
-
-    markGameCompleted(selectedGame.id, completion)
-    setCompletionData(completion)
-    setGameState("completed")
-    
-    // Update the URL to show the completed state
-    router.push(`/games/${selectedGame.id}/completed`)
-  }
+  };
 
   const handleBackToSelection = () => {
     // Navigate back to the games list
@@ -124,21 +156,27 @@ export function FutQuizApp() {
     setGameState("selection")
   }
 
-  const handlePlayAgain = () => {
-    if (selectedGame) {
+  const handlePlayAgain = async () => {
+    if (!selectedGame) return;
+    
+    try {
       // In development, allow replaying the same quiz
       if (process.env.NODE_ENV === "development") {
-        localStorage.removeItem(`futquiz_completion_${selectedGame.id}`)
+        localStorage.removeItem(`futquiz_completion_${selectedGame.id}`);
       }
       
       // Navigate to the game URL to reset the state
-      router.push(`/games/${selectedGame.id}`)
+      router.push(`/games/${selectedGame.id}`);
       
-      // Reset the game state
-      const quiz = getGameQuiz(selectedGame.id)
-      setCurrentQuiz(quiz)
-      setCompletionData(null)
-      setGameState("playing")
+      // Fetch a new quiz
+      setGameState("loading");
+      const quiz = await fetchQuiz();
+      setCurrentQuiz(quiz);
+      setCompletionData(null);
+      setGameState("playing");
+    } catch (error) {
+      console.error("Failed to load quiz:", error);
+      setGameState("selection");
     }
   }
 

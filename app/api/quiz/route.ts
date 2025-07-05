@@ -1,22 +1,33 @@
 // app/api/quiz/route.ts
-import { db } from '@/lib/db';
-import { quizzes, questions, gameTypes, categories } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/db'; // adapta a tu ORM
 
 export async function GET() {
-  const today = new Date().toISOString().split('T')[0];
+  const latestQuiz = await db.query.quizzes.findFirst({
+    orderBy: (quizzes, { desc }) => [desc(quizzes.date), desc(quizzes.createdAt)],
+  });
 
-  const [quiz] = await db
-    .select()
-    .from(quizzes)
-    .where(eq(quizzes.date, today));
+  if (!latestQuiz) {
+    return NextResponse.json({ error: 'No quiz found' }, { status: 404 });
+  }
 
-  if (!quiz) return Response.json({ error: 'No hay quiz' }, { status: 404 });
+  const questions = await db.query.questions.findMany({
+    where: (questions, { eq }) => eq(questions.quizId, latestQuiz.id),
+    columns: {
+      id: true,
+      text: true,
+      options: true,
+      correct: true
+    }
+  });
 
-  const preguntas = await db
-    .select()
-    .from(questions)
-    .where(eq(questions.quizId, quiz.id));
+  // Mapear los campos para que coincidan con el tipo Question
+  const formattedQuestions = questions.map(q => ({
+    id: q.id,
+    question: q.text, // Mapear 'text' a 'question'
+    options: q.options,
+    correctAnswer: q.correct // Mapear 'correct' a 'correctAnswer'
+  }));
 
-  return Response.json({ quiz, questions: preguntas });
+  return NextResponse.json({ quizId: latestQuiz.id, questions: formattedQuestions });
 }
