@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { CheckCircle, XCircle, Clock } from "lucide-react"
 import type { Quiz, GameType } from "../lib/types"
 import { submitQuizAnswers } from "@/lib/api"
@@ -29,11 +28,9 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
   const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100
   const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1
 
-  // Función para manejar el timeout del temporizador
   const handleTimerTimeout = useCallback(() => {
     if (timerEnabled) {
       setTimerActive(false)
-      // Si no se ha seleccionado respuesta, marcar como incorrecta
       if (!selectedAnswer && currentQuestion) {
         const newAnswers = [
           ...answers,
@@ -59,7 +56,6 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
     }
   }, [timerEnabled, selectedAnswer, answers, currentQuestion, isLastQuestion, onComplete, score, quiz.questions.length, currentQuestionIndex])
 
-  // Efecto para el temporizador
   useEffect(() => {
     if (timerEnabled && timerActive && timeLeft > 0 && !showResult) {
       const timer = setTimeout(() => {
@@ -67,12 +63,10 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
       }, 1000)
       return () => clearTimeout(timer)
     } else if (timerEnabled && timeLeft === 0 && !showResult) {
-      // Time's up - manejar timeout
       handleTimerTimeout()
     }
   }, [timerEnabled, timerActive, timeLeft, showResult, handleTimerTimeout])
   
-  // Reiniciar el temporizador cuando cambia la pregunta
   useEffect(() => {
     if (timerEnabled) {
       setTimeLeft(timerSeconds || 30)
@@ -88,13 +82,12 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
   }
 
   const handleAnswerSelect = async (answer: string) => {
-    if (showResult) return // Evitar múltiples selecciones
+    if (showResult) return
     
     setSelectedAnswer(answer)
     const isCorrect = answer === currentQuestion.correctAnswer
     
     try {
-      // Enviar la respuesta al servidor
       const result = await submitQuizAnswers(currentQuestion.id, answer)
       
       const newAnswers = [
@@ -113,10 +106,8 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
         setScore(score + 1)
       }
       
-      // Desactivar el temporizador cuando se selecciona una respuesta
       setTimerActive(false)
       
-      // Mover a la siguiente pregunta después de un breve retraso
       setTimeout(() => {
         if (isLastQuestion) {
           onComplete(score + (isCorrect ? 1 : 0), quiz.questions.length)
@@ -132,28 +123,53 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
       }, 1500)
     } catch (error) {
       console.error('Error submitting answer:', error)
-      // Mostrar un mensaje de error al usuario
       alert('Error al enviar la respuesta. Por favor, inténtalo de nuevo.')
     }
   }
 
+  if (!currentQuestion) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-cyber-neonPink">Cargando pregunta...</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="w-full max-w-2xl mx-auto p-4" data-testid="quiz-game-container">
-      <Card className="shadow-lg border-2 border-green-100">
-        <CardHeader className="bg-green-50">
-          <div className="flex justify-between items-center mb-2">
-            <CardTitle className="text-lg" data-testid="question-counter">Question {currentQuestionIndex + 1} of {quiz.questions.length}</CardTitle>
-            <div className="text-sm text-gray-600 bg-white px-3 py-1 rounded-full">
-              Score: {score}/
-              {currentQuestionIndex + (showResult && selectedAnswer === currentQuestion.correctAnswer ? 1 : 0)}
+    <div className="w-full max-w-3xl mx-auto p-4 relative z-10" data-testid="quiz-game-container">
+      <Card className="relative overflow-hidden border border-cyber-neonPink/30 bg-cyber-darker/80 backdrop-blur-sm shadow-2xl shadow-cyber-neonPurple/10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ff2a6d10_0%,transparent_70%)] animate-pulse"></div>
+        
+        <CardHeader className="relative z-10 bg-cyber-darkBlue/50 border-b border-cyber-neonPink/20">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-3">
+            <CardTitle className="text-lg font-mono tracking-wider text-cyber-neonCyan" data-testid="question-counter">
+              <span className="text-cyber-neonPink">[</span> QUESTION {currentQuestionIndex + 1} / {quiz.questions.length} <span className="text-cyber-neonPink">]</span>
+            </CardTitle>
+            <div className="text-sm font-mono tracking-wider bg-cyber-darker/80 border border-cyber-neonCyan/30 text-cyber-neonCyan px-4 py-1.5 rounded-full shadow-lg shadow-cyber-neonCyan/10">
+              SCORE: <span className="text-cyber-neonGreen font-bold">{score}</span>/
+              <span className="text-cyber-neonPink">{currentQuestionIndex + (showResult && selectedAnswer === currentQuestion.correctAnswer ? 1 : 0)}</span>
             </div>
           </div>
-          <Progress value={progress} className="h-2" />
+          
+          <div className="relative pt-1">
+            <div className="relative h-1.5 bg-cyber-darker/70 border border-cyber-neonPink/20 overflow-hidden rounded-full">
+              <div 
+                className="h-full bg-gradient-to-r from-cyber-neonPink to-cyber-neonCyan transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div className="absolute right-0 top-0 text-xs font-mono text-cyber-neonPink/70">
+              {Math.round(progress)}%
+            </div>
+          </div>
+          
           {timerEnabled && (
-            <div className="flex items-center justify-center mt-2">
+            <div className="flex items-center justify-center mt-3">
               <div
-                className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-                  timeLeft <= 10 ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-mono tracking-wider border ${
+                  timeLeft <= 10 
+                    ? 'border-cyber-neonPink/50 bg-cyber-neonPink/10 text-cyber-neonPink animate-pulse' 
+                    : 'border-cyber-neonCyan/50 bg-cyber-neonCyan/10 text-cyber-neonCyan'
                 }`}
               >
                 <Clock className="h-4 w-4" />
@@ -163,68 +179,66 @@ export function QuizGame({ quiz, gameType, onComplete, timerEnabled = false, tim
           )}
         </CardHeader>
 
-        <CardContent className="p-6" data-testid="quiz-game-container">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800 leading-relaxed">{currentQuestion.question}</h2>
+        <CardContent className="relative z-10 p-6 md:p-8">
+          <h2 className="text-xl md:text-2xl font-medium font-mono tracking-wide text-cyber-neonCyan/90 leading-relaxed mb-8 px-2">
+            {currentQuestion.question}
+          </h2>
 
           <div className="space-y-4" data-testid="options-container">
-            {currentQuestion.options.map((option, index) => {
-              let buttonClass = "w-full p-4 text-left border-2 transition-all duration-200 hover:border-green-300"
-
+            {currentQuestion.options.map((option) => {
+              let buttonClass = 'w-full p-0 overflow-hidden transition-all duration-300 font-mono tracking-wide rounded-lg group relative '
+              let innerClass = 'w-full h-full px-6 py-4 text-left transition-all duration-300 relative flex items-center justify-between'
+              
               if (showResult) {
                 if (option === currentQuestion.correctAnswer) {
-                  buttonClass += " bg-green-100 border-green-500 text-green-800"
+                  buttonClass += 'bg-gradient-to-r from-cyber-neonGreen/5 to-cyber-neonGreen/10 '
+                  innerClass += 'text-cyber-neonGreen '
                 } else if (option === selectedAnswer && option !== currentQuestion.correctAnswer) {
-                  buttonClass += " bg-red-100 border-red-500 text-red-800"
+                  buttonClass += 'bg-gradient-to-r from-cyber-neonPink/5 to-cyber-neonPink/10 '
+                  innerClass += 'text-cyber-neonPink/80 line-through '
                 } else {
-                  buttonClass += " bg-gray-50 border-gray-200 text-gray-500"
+                  buttonClass += 'bg-cyber-darker/50 border border-cyber-neonPink/10 '
+                  innerClass += 'text-cyber-neonCyan/60 '
                 }
               } else if (selectedAnswer === option) {
-                buttonClass += " bg-blue-100 border-blue-500 text-blue-800"
+                buttonClass += 'bg-gradient-to-r from-cyber-neonBlue/10 to-cyber-neonPurple/10 border-l-4 border-cyber-neonCyan '
+                innerClass += 'text-cyber-neonCyan ml-[-4px] '
               } else {
-                buttonClass += " bg-white border-gray-200 hover:bg-green-50"
+                buttonClass += 'bg-cyber-darker/50 border border-cyber-neonPink/20 hover:border-cyber-neonCyan/40 hover:bg-cyber-neonCyan/5 '
+                innerClass += 'text-cyber-neonCyan/90 '
               }
 
               return (
-                <Button
+                <div 
                   key={option}
-                  variant={getButtonVariant(option)}
-                  className="w-full justify-start text-left h-auto py-3 px-4"
-                  onClick={() => handleAnswerSelect(option)}
-                  disabled={showResult}
-                  data-testid={`option-${currentQuestion.id}-${index}`}
-                  data-option-index={index}
-                  data-question-id={currentQuestion.id}
+                  className={buttonClass}
+                  onClick={() => !showResult && handleAnswerSelect(option)}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{option}</span>
+                  <div className="absolute inset-0.5 bg-gradient-to-r from-cyber-neonPink/5 to-cyber-neonCyan/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className={innerClass}>
+                    <span className="relative z-10">{option}</span>
                     {showResult && (
-                      <>
-                        {option === currentQuestion.correctAnswer && <CheckCircle className="h-5 w-5 text-green-600" />}
-                        {option === selectedAnswer && option !== currentQuestion.correctAnswer && (
-                          <XCircle className="h-5 w-5 text-red-600" />
-                        )}
-                      </>
+                      <div className="relative z-10 ml-4 flex-shrink-0">
+                        {option === currentQuestion.correctAnswer ? (
+                          <CheckCircle className="h-5 w-5 text-cyber-neonGreen" />
+                        ) : option === selectedAnswer ? (
+                          <XCircle className="h-5 w-5 text-cyber-neonPink" />
+                        ) : null}
+                      </div>
                     )}
                   </div>
-                </Button>
+                </div>
               )
             })}
           </div>
 
-          {/* Botón de siguiente eliminado para evaluación automática */}
-
-          {showResult && (
-            <div className="mt-6 p-4 rounded-lg bg-gray-50 border">
-              <p className="text-center text-gray-700">
-                {selectedAnswer === currentQuestion.correctAnswer ? (
-                  <span className="text-green-600 font-semibold">✅ Correct!</span>
-                ) : (
-                  <span className="text-red-600 font-semibold">❌ Incorrect</span>
-                )}
-              </p>
-              {currentQuestion.explanation && (
-                <p className="text-sm text-gray-600 mt-2 text-center">{currentQuestion.explanation}</p>
-              )}
+          {showResult && currentQuestion.explanation && (
+            <div className="mt-8 p-5 rounded-xl border border-cyber-neonPink/20 bg-cyber-darker/60 backdrop-blur-sm">
+              <div className="mt-3 p-4 bg-cyber-darkBlue/30 rounded-lg border border-cyber-neonCyan/20">
+                <p className="text-sm text-cyber-neonCyan/80 font-mono tracking-wide leading-relaxed">
+                  <span className="text-cyber-neonPink font-medium">[NOTE]</span> {currentQuestion.explanation}
+                </p>
+              </div>
             </div>
           )}
         </CardContent>

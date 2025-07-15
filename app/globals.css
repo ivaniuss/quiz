@@ -14,73 +14,83 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    /* Base colors */
+    --background: 260 100% 4%;
+    --foreground: 180 100% 99%;
+    --card: 260 70% 6%;
+    --card-foreground: 180 100% 99%;
+    --popover: 260 70% 6%;
+    --popover-foreground: 180 100% 99%;
+    
+    /* Primary & Accent */
+    --primary: 320 100% 65%;
+    --primary-foreground: 260 100% 4%;
+    --secondary: 190 90% 55%;
+    --secondary-foreground: 260 100% 4%;
+    
+    /* UI Elements */
+    --muted: 260 30% 15%;
+    --muted-foreground: 190 20% 90%;
+    --accent: 260 80% 20%;
+    --accent-foreground: 190 90% 60%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 180 100% 99%;
+    --border: 260 30% 25%;
+    --input: 260 30% 20%;
+    --ring: 320 100% 65%;
+    
+    /* Chart colors */
+    --chart-1: 320 100% 65%;
+    --chart-2: 190 90% 55%;
+    --chart-3: 120 100% 50%;
+    --chart-4: 60 100% 50%;
+    --chart-5: 300 100% 60%;
+    
+    /* UI Settings */
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Sidebar */
+    --sidebar-background: 260 100% 3%;
+    --sidebar-foreground: 180 100% 99%;
+    --sidebar-primary: 320 100% 65%;
+    --sidebar-accent: 260 30% 15%;
+    --sidebar-accent-foreground: 120 100% 99%;
+    --sidebar-border: 260 30% 30%;
+    --sidebar-ring: 200 100% 50%;
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 240 25% 8%;
+    --foreground: 120 100% 99%;
+    --card: 240 15% 10%;
+    --card-foreground: 120 100% 99%;
+    --popover: 240 20% 6%;
+    --popover-foreground: 120 100% 99%;
+    --primary: 330 100% 71%;
+    --primary-foreground: 240 25% 8%;
+    --secondary: 200 100% 50%;
+    --secondary-foreground: 240 25% 8%;
+    --muted: 240 30% 20%;
+    --muted-foreground: 120 100% 99%;
+    --accent: 200 100% 50%;
+    --accent-foreground: 240 25% 8%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 120 100% 99%;
+    --border: 240 30% 30%;
+    --input: 240 30% 30%;
+    --ring: 330 100% 71%;
+    --chart-1: 330 100% 71%;
+    --chart-2: 200 100% 50%;
+    --chart-3: 120 100% 50%;
+    --chart-4: 60 100% 50%;
+    --chart-5: 300 100% 50%;
+    --sidebar-background: 240 25% 5%;
+    --sidebar-foreground: 120 100% 99%;
+    --sidebar-primary: 330 100% 71%;
+    --sidebar-primary-foreground: 240 25% 8%;
+    --sidebar-accent: 260 30% 20%;
+    --sidebar-accent-foreground: 120 100% 99%;
+    --sidebar-border: 260 30% 30%;
+    --sidebar-ring: 200 100% 50%;
   }
 }
 
@@ -90,5 +100,241 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image: 
+      linear-gradient(to bottom, hsl(var(--darker-bg)), hsl(var(--dark-bg))),
+      radial-gradient(at 0% 0%, hsla(270, 100%, 30%, 0.2) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(320, 100%, 30%, 0.15) 0px, transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Cyberpunk glowing elements */
+  .cyber-glow {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .cyber-glow::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    z-index: -1;
+    background: linear-gradient(45deg, #ff00ff, #00ffff, #00ff9d, #ff00ff);
+    background-size: 300% 300%;
+    opacity: 0;
+    transition: all 0.4s ease;
+    animation: cyberGlow 8s ease infinite;
+    border-radius: inherit;
+    filter: blur(4px);
+  }
+
+  .cyber-glow:hover::before {
+    opacity: 0.3;
+    filter: blur(5px);
+  }
+
+  /* Animaciones personalizadas */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-10px) translateX(5px);
+  }
+  50% {
+    transform: translateY(5px) translateX(-5px);
+  }
+  75% {
+    transform: translateY(-5px) translateX(10px);
+  }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 0.8; }
+  25% { opacity: 0.6; }
+  50% { opacity: 0.9; }
+  75% { opacity: 0.7; }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes glitch {
+  0% { text-shadow: 0.05em 0 0 #ff00ff, -0.05em -0.025em 0 #00ffff; }
+  14% { text-shadow: 0.05em 0 0 #ff00ff, -0.05em -0.025em 0 #00ffff; }
+  15% { text-shadow: -0.05em -0.025em 0 #ff00ff, 0.05em 0.025em 0 #00ffff; }
+  49% { text-shadow: -0.05em -0.025em 0 #ff00ff, 0.05em 0.025em 0 #00ffff; }
+  50% { text-shadow: 0.025em 0.05em 0 #ff00ff, 0.025em 0.05em 0 #00ffff; }
+  99% { text-shadow: 0.025em 0.05em 0 #ff00ff, 0.025em 0.05em 0 #00ffff; }
+  100% { text-shadow: -0.025em 0 0 #ff00ff, -0.025em -0.05em 0 #00ffff; }
+}
+
+@keyframes cyberGlow {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+      background-position: 300% 0;
+    }
+    100% {
+      background-position: 0 0;
+    }
+  }
+
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    border: 1px solid transparent;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, hsl(var(--neon-pink)), hsl(var(--neon-cyan)));
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn:hover::before {
+    opacity: 0.2;
+  }
+
+  .btn-primary {
+    background: linear-gradient(45deg, hsl(var(--neon-pink)), hsl(var(--neon-cyan)));
+    color: white;
+    border: none;
+    box-shadow: 0 0 15px hsl(var(--neon-pink) / 0.4);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 20px hsl(var(--neon-pink) / 0.6);
+  }
+
+  .btn-secondary {
+    background: linear-gradient(45deg, hsl(var(--neon-purple)), hsl(var(--neon-cyan)));
+    color: white;
+    border: none;
+    box-shadow: 0 0 15px hsl(var(--neon-cyan) / 0.4);
+  }
+
+  .btn-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 20px hsl(var(--neon-cyan) / 0.6);
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-card text-card-foreground border border-border shadow-sm rounded-lg overflow-hidden;
+    background-color: hsl(var(--card-bg));
+    border: 1px solid hsla(240, 30%, 20%, 0.5);
+    box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #ff00ff, #00ffff);
+    opacity: 0.7;
+  }
+
+  .card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 30px rgba(100, 255, 255, 0.1);
+    transform: translateY(-4px);
+    border-color: rgba(100, 255, 255, 0.3);
+  }
+
+  /* Input styles */
+  input, select, textarea {
+    background: rgba(10, 5, 30, 0.7);
+    border: 1px solid rgba(100, 255, 255, 0.2);
+    color: #e0f8ff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #ff00ff;
+    box-shadow: 0 0 0 2px rgba(255, 0, 255, 0.3), 0 0 15px rgba(255, 0, 255, 0.2);
+    outline: none;
+    background: rgba(15, 10, 40, 0.9);
+  }
+
+  /* Select dropdown */
+  .select-trigger {
+    background: rgba(10, 5, 30, 0.9);
+    border: 1px solid rgba(100, 255, 255, 0.2);
+    color: #e0f8ff;
+  }
+
+  .select-content {
+    background: #0a0520;
+    border: 1px solid rgba(100, 255, 255, 0.2);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  }
+
+  .select-item {
+    color: #e0f8ff;
+  }
+
+  .select-item:hover {
+    background: rgba(100, 255, 255, 0.1);
+    color: #fff;
+  }
+
+  /* Scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(10, 5, 30, 0.5);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #ff00ff, #00ffff);
+    border-radius: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #ff00ff, #00ff9d);
+  }
+
+  /* Custom scrollbar for Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #ff00ff #0a051f;
   }
 }
