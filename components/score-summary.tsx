@@ -26,10 +26,13 @@ export function ScoreSummary({ completionData, onPlayAgain, onBackToGames }: Sco
   }
 
   const getScoreColor = () => {
-    if (percentage >= 80) return "text-green-600"
-    if (percentage >= 60) return "text-blue-600"
-    if (percentage >= 40) return "text-yellow-600"
-    return "text-red-600"
+    if (percentage >= 90) return "from-primary to-secondary"
+    if (percentage >= 80) return "from-purple-400 to-pink-600"
+    if (percentage >= 70) return "from-cyan-400 to-blue-600"
+    if (percentage >= 60) return "from-green-400 to-emerald-600"
+    if (percentage >= 50) return "from-yellow-400 to-amber-600"
+    if (percentage >= 40) return "from-orange-400 to-red-600"
+    return "from-red-400 to-red-800"
   }
 
   const handleShare = async () => {
@@ -55,55 +58,60 @@ export function ScoreSummary({ completionData, onPlayAgain, onBackToGames }: Sco
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Card className="shadow-lg border-2 border-green-100 text-center">
-        <CardHeader className="bg-green-50">
-          <CardTitle className="text-2xl text-green-700 flex items-center justify-center gap-2">
-            <Trophy className="h-6 w-6" />
+      <Card className="bg-card/80 backdrop-blur-sm border-2 border-secondary/20 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-30"></div>
+        <CardHeader className="relative z-10 bg-gradient-to-r from-primary/5 to-secondary/5 border-b border-secondary/20">
+          <CardTitle className="text-2xl text-primary font-bold flex items-center justify-center gap-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            <Trophy className="h-6 w-6 text-primary" />
             {completionData.gameName} Complete!
           </CardTitle>
         </CardHeader>
 
         <CardContent className="p-8">
           <div className="mb-6">
-            <div className={`text-6xl font-bold mb-2 ${getScoreColor()}`}>
-              {score}/{totalQuestions}
+            <div className="relative z-10">
+            <div className={`text-6xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r ${getScoreColor()}`}>
+              {score}<span className="text-foreground/70">/{totalQuestions}</span>
             </div>
-            <div className={`text-2xl font-semibold mb-4 ${getScoreColor()}`}>{percentage}%</div>
+            <div className={`text-2xl font-semibold mb-4 ${getScoreColor()}`}>
+              <span className="drop-shadow-[0_0_8px_rgba(255,0,255,0.5)]">{percentage}%</span>
+            </div>
             {completionData.timerUsed && (
-              <div className="mb-4">
-                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                  <Clock className="h-3 w-3 mr-1" />
+              <div className="mb-4 animate-pulse">
+                <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary/30 backdrop-blur-sm">
+                  <Clock className="h-3 w-3 mr-1 text-secondary" />
                   Timer: {completionData.timerSeconds}s per question
                 </Badge>
               </div>
             )}
-            <p className="text-xl text-gray-700 mb-2">{getScoreMessage()}</p>
+            <p className="text-xl text-foreground/90 font-medium mb-2">{getScoreMessage()}</p>
+          </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-              <Target className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-              <p className="text-sm text-blue-700 font-semibold">Accuracy</p>
-              <p className="text-lg font-bold text-blue-800">{percentage}%</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 relative z-10">
+            <div className="bg-primary/5 rounded-lg p-4 border border-primary/20 backdrop-blur-sm hover:border-primary/40 transition-colors">
+              <Target className="h-6 w-6 text-primary mx-auto mb-2" />
+              <p className="text-sm text-foreground/80 font-medium">Accuracy</p>
+              <p className="text-lg font-bold text-primary">{percentage}%</p>
             </div>
 
-            <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-              <Trophy className="h-6 w-6 text-green-600 mx-auto mb-2" />
-              <p className="text-sm text-green-700 font-semibold">Correct</p>
-              <p className="text-lg font-bold text-green-800">{score}</p>
+            <div className="bg-secondary/5 rounded-lg p-4 border border-secondary/20 backdrop-blur-sm hover:border-secondary/40 transition-colors">
+              <Trophy className="h-6 w-6 text-secondary mx-auto mb-2" />
+              <p className="text-sm text-foreground/80 font-medium">Correct</p>
+              <p className="text-lg font-bold text-secondary">{score}</p>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <Calendar className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-700 font-semibold">Total</p>
-              <p className="text-lg font-bold text-gray-800">{totalQuestions}</p>
+            <div className="bg-accent/5 rounded-lg p-4 border border-accent/20 backdrop-blur-sm hover:border-accent/40 transition-colors">
+              <Calendar className="h-6 w-6 text-accent-foreground mx-auto mb-2" />
+              <p className="text-sm text-foreground/80 font-medium">Total</p>
+              <p className="text-lg font-bold text-accent-foreground">{totalQuestions}</p>
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 relative z-10">
             <Button
               onClick={handleShare}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-semibold"
+              className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground py-3 text-lg font-bold hover:opacity-90 transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,0,255,0.5)]"
             >
               <Share2 className="h-5 w-5 mr-2" />
               Share Your Score
@@ -112,7 +120,7 @@ export function ScoreSummary({ completionData, onPlayAgain, onBackToGames }: Sco
             <Button
               onClick={onBackToGames}
               variant="outline"
-              className="w-full border-green-600 text-green-600 hover:bg-green-50 py-3 text-lg font-semibold bg-transparent"
+              className="w-full border-secondary/40 text-foreground hover:bg-secondary/10 hover:border-secondary/60 py-3 text-lg font-semibold transition-all duration-300 hover:shadow-[0_0_10px_rgba(0,255,255,0.3)]"
             >
               Play Other Games
             </Button>
@@ -120,17 +128,19 @@ export function ScoreSummary({ completionData, onPlayAgain, onBackToGames }: Sco
             {onPlayAgain && (
               <Button
                 onClick={onPlayAgain}
-                variant="outline"
-                className="w-full border-gray-300 text-gray-600 hover:bg-gray-50 py-2 text-sm bg-transparent"
+                variant="ghost"
+                className="w-full text-foreground/60 hover:text-foreground hover:bg-foreground/5 py-2 text-sm transition-colors"
               >
                 Play Again (Dev Mode)
               </Button>
             )}
           </div>
 
-          <div className="mt-6 text-sm text-gray-500">
-            <p>🔥 Come back tomorrow for a new challenge!</p>
-            <p className="mt-1">New quiz available at midnight</p>
+          <div className="mt-6 text-sm text-foreground/60 text-center">
+            <p className="inline-flex items-center justify-center gap-1 animate-pulse">
+              <span className="text-primary">🔥</span> Come back tomorrow for a new challenge!
+            </p>
+            <p className="mt-1 text-foreground/50">New quiz available at midnight</p>
           </div>
         </CardContent>
       </Card>
